@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Cognitive Games</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRCj3cIhH+JqiwunfOGqlxX1A/LC4CsrMdHlKmCf3J8/YGoTeqm4YKdhNUn/+3Ygzx6tv4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #ffffff);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        /* Heading */
+        .container h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333333;
+        }
+
+        /* Categories */
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            display: inline-block;
+            padding-bottom: 5px;
+            font-size: 1.5em;
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Game Card */
+        .game-card {
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Game Image */
+        .game-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        /* Game Details */
+        .game-details {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .game-details h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+
+        .game-details p {
+            flex-grow: 1;
+            color: #555555;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .game-details a {
+            text-decoration: none;
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 25px;
+            text-align: center;
+            transition: background-color 0.3s;
+            display: block;
+        }
+
+        .game-details a:hover {
+            background-color: #2980b9;
+        }
+
+        /* Back Button */
+        .back-button {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-button a {
+            text-decoration: none;
+            background-color: #e74c3c;
+            color: #ffffff;
+            padding: 12px 30px;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+            font-size: 1em;
+            display: inline-block;
+        }
+
+        .back-button a:hover {
+            background-color: #c0392b;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .container h1 {
+                font-size: 1.5em;
+            }
+
+            .category h2 {
+                font-size: 1.3em;
+            }
+
+            .game-card img {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Available Cognitive Games</h1>
+
+        <!-- Attention Category -->
+        <div class="category">
+            <h2>Attention</h2>
+            <div class="games-grid">
+                <!-- Divine Runner Game Card -->
+                <div class="game-card" onclick="location.href='attention/divine-runner.html'">
+                    <img src="images/divine-runner.jpg" alt="Divine Runner">
+                    <div class="game-details">
+                        <h3>Divine Runner</h3>
+                        <p>Test your attention and focus by navigating through challenging obstacles.</p>
+                        <a href="attention/divine-runner.html">Play Now</a>
+                    </div>
+                </div>
+
+                <!-- Matrix Pattern Breaker Game Card -->
+                <div class="game-card" onclick="location.href='attention/matrix-pattern-breaker.html'">
+                    <img src="images/matrix-pattern-breaker.jpg" alt="Matrix Pattern Breaker">
+                    <div class="game-details">
+                        <h3>Matrix Pattern Breaker</h3>
+                        <p>Enhance your pattern recognition and cognitive processing speed.</p>
+                        <a href="attention/matrix-pattern-breaker.html">Play Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory Category -->
+        <div class="category">
+            <h2>Memory</h2>
+            <div class="games-grid">
+                <!-- Memory Sequential Game Card -->
+                <div class="game-card" onclick="location.href='memory/memory-sequential.html'">
+                    <img src="images/memory-sequential.jpg" alt="Memory Sequential">
+                    <div class="game-details">
+                        <h3>Memory Sequential</h3>
+                        <p>Assess your ability to remember and recall sequences of information.</p>
+                        <a href="memory/memory-sequential.html">Play Now</a>
+                    </div>
+                </div>
+
+                <!-- Memory Matching Game Card -->
+                <div class="game-card" onclick="location.href='memory/memory-matching.html'">
+                    <img src="images/memory-matching.jpg" alt="Memory Matching">
+                    <div class="game-details">
+                        <h3>Memory Matching</h3>
+                        <p>Challenge your short-term memory by matching pairs of cards.</p>
+                        <a href="memory/memory-matching.html">Play Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reaction Category -->
+        <div class="category">
+            <h2>Reaction</h2>
+            <div class="games-grid">
+                <!-- Press Reaction Game Card -->
+                <div class="game-card" onclick="location.href='reaction/press-reaction.html'">
+                    <img src="images/press-reaction.jpg" alt="Press Reaction">
+                    <div class="game-details">
+                        <h3>Press Reaction</h3>
+                        <p>Measure your reaction time and decision-making speed.</p>
+                        <a href="reaction/press-reaction.html">Play Now</a>
+                    </div>
+                </div>
+
+                <!-- Red Circle Reaction Game Card -->
+                <div class="game-card" onclick="location.href='reaction/red-circle-reaction.html'">
+                    <img src="images/red-circle-reaction.jpg" alt="Red Circle Reaction">
+                    <div class="game-details">
+                        <h3>Red Circle Reaction</h3>
+                        <p>Improve your quick response abilities with visual stimuli.</p>
+                        <a href="reaction/red-circle-reaction.html">Play Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problem-solving Category -->
+        <div class="category">
+            <h2>Problem-solving</h2>
+            <div class="games-grid">
+                <!-- Problem Solving Turkish Middle School Game Card -->
+                <div class="game-card" onclick="location.href='problem-solving/problem-solving-turkish-middleschool.html'">
+                    <img src="images/problem-solving-middleschool.jpg" alt="Problem Solving Turkish Middle School">
+                    <div class="game-details">
+                        <h3>Problem Solving: Middle School</h3>
+                        <p>Enhance your logical reasoning and problem-solving skills.</p>
+                        <a href="problem-solving/problem-solving-turkish-middleschool.html">Play Now</a>
+                    </div>
+                </div>
+
+                <!-- Problem Solving Turkish Lise Universite Game Card -->
+                <div class="game-card" onclick="location.href='problem-solving/problem-solving-turkish-lise-universite.html'">
+                    <img src="images/problem-solving-lise-universite.jpg" alt="Problem Solving Turkish Lise Universite">
+                    <div class="game-details">
+                        <h3>Problem Solving: Lise Universite</h3>
+                        <p>Challenge your advanced problem-solving and analytical skills.</p>
+                        <a href="problem-solving/problem-solving-turkish-lise-universite.html">Play Now</a>
+                    </div>
+                </div>
+
+                <!-- Problem Solving Test Game Card -->
+                <div class="game-card" onclick="location.href='problem-solving/problem-solving-test.html'">
+                    <img src="images/problem-solving-test.jpg" alt="Problem Solving Test">
+                    <div class="game-details">
+                        <h3>Problem Solving Test</h3>
+                        <p>Comprehensive test to evaluate your overall problem-solving capabilities.</p>
+                        <a href="problem-solving/problem-solving-test.html">Play Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Registration Button -->
+        <div class="back-button">
+            <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Registration</a>
+        </div>
+    </div>
+</body>
+</html>
