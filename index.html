@@ -1,1 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognitive Testing Platform</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRCj3cIhH+JqiwunfOGqlxX1A/LC4CsrMdHlKmCf3J8/YGoTeqm4YKdhNUn/+3Ygzx6tv4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #ffffff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Container */
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        /* Heading */
+        .container h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #333333;
+        }
+
+        /* Subheading */
+        .container p {
+            font-size: 1em;
+            margin-bottom: 30px;
+            color: #666666;
+        }
+
+        /* Form Styling */
+        .registration-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .registration-form input[type="text"] {
+            width: 100%;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .registration-form input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .registration-form button {
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .registration-form button:hover {
+            background-color: #2980b9;
+        }
+
+        .registration-form button i {
+            margin-right: 8px;
+        }
+
+        /* Confirmation Message */
+        .confirmation {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #eafaf1;
+            border-left: 5px solid #2ecc71;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .confirmation p {
+            color: #2c3e50;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .container h1 {
+                font-size: 1.5em;
+            }
+
+            .registration-form button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Cognitive Testing Platform</h1>
+        <p>Please register to begin your cognitive assessment.</p>
+        <form class="registration-form" id="registrationForm">
+            <input type="text" id="schoolName" name="schoolName" placeholder="Enter your School Name" required>
+            <button type="submit"><i class="fas fa-user-plus"></i> Register</button>
+        </form>
+        <div class="confirmation" id="confirmationMessage">
+            <p><strong>Registration Successful!</strong></p>
+            <p>Your Unique ID: <span id="uniqueId"></span></p>
+            <p>Please keep this ID safe as you'll need it to access the tests.</p>
+            <button onclick="proceedToTests()" style="background-color: #2ecc71; border: none; padding: 10px 20px; border-radius: 20px; color: #ffffff; cursor: pointer; margin-top: 10px;">Proceed to Tests</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to generate a unique ID
+        function generateUniqueId() {
+            // Simple UUID generator
+            return 'xxxx-xxxx-xxxx-xxxx'.replace(/[x]/g, function() {
+                return Math.floor(Math.random() * 16).toString(16);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            // Get the school name
+            const schoolName = document.getElementById('schoolName').value.trim();
+
+            if (schoolName === "") {
+                alert("Please enter your School Name.");
+                return;
+            }
+
+            // Generate unique ID
+            const uniqueId = generateUniqueId();
+
+            // Display confirmation message
+            document.getElementById('uniqueId').textContent = uniqueId;
+            document.getElementById('confirmationMessage').style.display = 'block';
+            document.getElementById('registrationForm').style.display = 'none';
+
+            // Optionally, you can store the registration data locally or prepare it for later submission
+            // For now, we'll store it in localStorage (note: this is temporary and not secure)
+            const registrationData = {
+                schoolName: schoolName,
+                uniqueId: uniqueId,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('registration_' + uniqueId, JSON.stringify(registrationData));
+
+            // You can log it to the console for debugging
+            console.log("Registration Data:", registrationData);
+        });
+
+        // Function to proceed to tests
+        function proceedToTests() {
+            // Redirect to the games index page or any other page you prefer
+            // Assuming your games are listed in index.html or another page
+            window.location.href = "index.html"; // Change this to the appropriate page
+        }
+    </script>
+</body>
+</html>
 
