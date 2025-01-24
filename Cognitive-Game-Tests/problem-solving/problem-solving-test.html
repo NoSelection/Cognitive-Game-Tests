@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Match Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1c2c 0%, #4a4e69 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            color: white;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+             position: relative; /* Added for absolute positioning of instructions */
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #FF61D8, #7A5FFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-box div:first-child {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .stat-box div:last-child {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .pattern-container {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pattern-container h3 {
+            color: #FF61D8;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .pattern,
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 10px;
+        }
+
+        .block {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 70px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .block:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .selected {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            }
+
+            100% {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .new-game {
+            background: linear-gradient(45deg, #FF61D8, #7A5FFF);
+            color: white;
+        }
+
+        .high-scores {
+            background: linear-gradient(45deg, #7A5FFF, #61B8FF);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .score-list {
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .score-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+         /* Instructions Box Styles */
+        #instructions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 10;
+            max-width: 90%;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+
+        #instructions p {
+            margin-bottom: 15px;
+        }
+
+          #instructions h2 {
+            margin-bottom: 15px;
+             color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+           <div id="instructions">
+            <h2>Nasıl Oynanır?</h2>
+            <p>1. Oyunu başlatmak için "Yeni Oyun" butonuna tıklayın.</p>
+            <p>2. Hedef desen yukarıda, sizin deseniniz aşağıdadır.</p>
+            <p>3. Aşağıdaki desendeki bloklara tıklayarak yerlerini değiştirin.</p>
+            <p>4. Aşağıdaki desen hedef desenle aynı olduğunda seviyeyi geçersiniz.</p>
+            <p>5. Zamanınız bittiğinde veya desenleri eşleştiremediğinizde oyun biter.</p>
+            <p>İyi eğlenceler!</p>
+        </div>
+        <div class="header">
+            <h1>Pattern Match Challenge</h1>
+            <p>Hedef deseni eşleştirmek için blokları yer değiştirin!</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div>Seviye</div>
+                <div id="level">1</div>
+            </div>
+            <div class="stat-box">
+                <div>Zaman</div>
+                <div id="timer">30</div>
+            </div>
+            <div class="stat-box">
+                <div>Puan</div>
+                <div id="score">0</div>
+            </div>
+        </div>
+
+        <div class="pattern-container">
+            <h3>Hedef Desen</h3>
+            <div class="pattern" id="targetPattern"></div>
+        </div>
+
+        <div class="pattern-container">
+            <h3>Sizin Deseniniz</h3>
+            <div class="player-grid" id="playerGrid"></div>
+        </div>
+
+        <div class="controls">
+            <button class="new-game" id="restartBtn">Yeni Oyun</button>
+            <button class="high-scores" id="scoresBtn">En Yüksek Puanlar</button>
+        </div>
+    </div>
+
+    <div class="modal" id="scoreModal">
+        <div class="modal-content">
+            <h2>En Yüksek Puanlar</h2>
+            <div class="score-list" id="scoreList"></div>
+            <button class="high-scores" onclick="closeScores()">Kapat</button>
+            <button class="high-scores" id="clearScoresBtn">Puanları Temizle</button>
+        </div>
+    </div>
+
+    <script>
+        const colors = [
+            '#FF61D8', // Hot Pink
+            '#7A5FFF', // Electric Purple
+            '#61B8FF', // Azure Blue
+            '#FF9671', // Coral
+            '#00D2A0', // Turquoise
+            '#FFC75F', // Golden Yellow
+            '#FF8DCF', // Soft Pink
+            '#A7FF83', // Lime Green
+            '#84FFFF', // Cyan
+            '#FF6B6B', // Salmon Red
+            '#9D94FF', // Periwinkle
+            '#FFB2E6'  // Light Pink
+        ];
+
+        let gameState = {
+            level: 1,
+            score: 0,
+            timeLeft: 30,
+            targetPattern: [],
+            playerPattern: [],
+            selectedBlock: null,
+            timer: null,
+            isGameOver: true // Game starts in game over state
+        };
+
+        let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+
+        const instructionsEl = document.getElementById('instructions');
+
+        function initializeGame() {
+             instructionsEl.style.display = 'none'; // Hide instructions
+
+             if (gameState.isGameOver) {
+                gameState = {
+                    level: 1,
+                    score: 0,
+                    timeLeft: 30,
+                    targetPattern: [],
+                    playerPattern: [],
+                    selectedBlock: null,
+                    timer: null,
+                    isGameOver: false
+                };
+            }
+
+            startLevel();
+            updateDisplay();
+        }
+
+        function startLevel() {
+            const numBlocks = Math.min(8, 4 + Math.floor(gameState.level / 2));
+            const levelColors = colors.slice(0, numBlocks);
+
+            gameState.targetPattern = shuffle([...levelColors]);
+             do {
+                gameState.playerPattern = shuffle([...levelColors]);
+            } while (arraysEqual(gameState.targetPattern, gameState.playerPattern));
+
+            gameState.timeLeft = Math.max(10, 30 - (gameState.level - 1) * 2);
+            gameState.selectedBlock = null;
+
+            renderPatterns();
+            startTimer();
+        }
+
+        function renderPatterns() {
+            const targetDiv = document.getElementById('targetPattern');
+            const playerDiv = document.getElementById('playerGrid');
+
+            targetDiv.innerHTML = '';
+            playerDiv.innerHTML = '';
+
+            gameState.targetPattern.forEach(color => {
+                const block = document.createElement('div');
+                block.className = 'block';
+                block.style.backgroundColor = color;
+                targetDiv.appendChild(block);
+            });
+
+            gameState.playerPattern.forEach((color, index) => {
+                const block = document.createElement('div');
+                block.className = 'block';
+                block.style.backgroundColor = color;
+                if (index === gameState.selectedBlock) {
+                    block.classList.add('selected');
+                }
+                block.addEventListener('click', () => handleBlockClick(index));
+                playerDiv.appendChild(block);
+            });
+        }
+
+        function handleBlockClick(index) {
+            if (gameState.isGameOver) return;
+
+            if (gameState.selectedBlock === null) {
+                gameState.selectedBlock = index;
+            } else {
+                swapBlocks(gameState.selectedBlock, index);
+                gameState.selectedBlock = null;
+            }
+
+            renderPatterns();
+            checkWin();
+        }
+
+        function swapBlocks(index1, index2) {
+            [gameState.playerPattern[index1], gameState.playerPattern[index2]] =
+            [gameState.playerPattern[index2], gameState.playerPattern[index1]];
+        }
+
+        function checkWin() {
+            if (arraysEqual(gameState.targetPattern, gameState.playerPattern)) {
+                clearInterval(gameState.timer);
+                const levelScore = calculateScore();
+                gameState.score += levelScore;
+                gameState.level++;
+
+                setTimeout(() => {
+                    alert(`Seviye Tamamlandı! +${levelScore} puan`);
+                    startLevel();
+                }, 300);
+            }
+        }
+
+        function calculateScore() {
+            return Math.floor(1000 * (gameState.timeLeft / 30) * (gameState.level / 2));
+        }
+
+        function startTimer() {
+            if (gameState.timer) clearInterval(gameState.timer);
+
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                updateDisplay();
+
+                if (gameState.timeLeft <= 0) {
+                    gameOver();
+                }
+            }, 1000);
+        }
+
+        function gameOver() {
+            clearInterval(gameState.timer);
+            gameState.isGameOver = true;
+            highScores.push(gameState.score);
+            highScores.sort((a, b) => b - a);
+            localStorage.setItem('highScores', JSON.stringify(highScores));
+
+            setTimeout(() => {
+                alert(`Oyun Bitti! Son Puan: ${gameState.score}`);
+                showScores();
+            }, 300);
+        }
+
+
+        function updateDisplay() {
+            document.getElementById('level').textContent = gameState.level;
+            document.getElementById('timer').textContent = gameState.timeLeft;
+            document.getElementById('score').textContent = gameState.score;
+        }
+
+        function showScores() {
+            const modal = document.getElementById('scoreModal');
+            const scoreList = document.getElementById('scoreList');
+            scoreList.innerHTML = '';
+            
+            const topScores = highScores.slice(0, 10);
+             if (topScores.length === 0) {
+            scoreList.textContent = "Henüz yüksek puan yok!";
+            } else {
+                topScores.forEach((score, index) => {
+                    const scoreItem = document.createElement('div');
+                    scoreItem.className = 'score-item';
+                     scoreItem.textContent = `${index + 1}. ${score} puan`;
+                    scoreList.appendChild(scoreItem);
+                });
+            }
+            
+            
+            modal.style.display = 'flex';
+        }
+        
+         function clearScores() {
+            localStorage.removeItem('highScores');
+            highScores = [];
+            showScores();
+        }
+
+        function closeScores() {
+            document.getElementById('scoreModal').style.display = 'none';
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function arraysEqual(arr1, arr2) {
+            return arr1.every((val, index) => val === arr2[index]);
+        }
+
+        // Event Listeners
+        document.getElementById('restartBtn').addEventListener('click', initializeGame);
+        document.getElementById('scoresBtn').addEventListener('click', showScores);
+          document.getElementById('clearScoresBtn').addEventListener('click', clearScores);
+
+
+
+       // Initialize game state on load, but do not start the game
+        updateDisplay();
+    </script>
+</body>
+
+</html>
