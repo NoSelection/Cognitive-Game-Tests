@@ -147,9 +147,10 @@
     <script>
         // Function to generate a unique ID
         function generateUniqueId() {
-            // Simple UUID generator
-            return 'xxxx-xxxx-xxxx-xxxx'.replace(/[x]/g, function() {
-                return Math.floor(Math.random() * 16).toString(16);
+            // Generate a UUIDv4 compliant ID
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
             });
         }
 
@@ -168,28 +169,39 @@
             // Generate unique ID
             const uniqueId = generateUniqueId();
 
+            // Initialize user progress
+            const userData = {
+                schoolName: schoolName,
+                uniqueId: uniqueId,
+                currentGameIndex: 0, // Start at first game
+                timestamp: new Date().toISOString(),
+                surveyCompleted: false // Flag to track survey completion
+            };
+
+            // Store user data in LocalStorage
+            localStorage.setItem('registration_' + uniqueId, JSON.stringify(userData));
+
             // Display confirmation message
             document.getElementById('uniqueId').textContent = uniqueId;
             document.getElementById('confirmationMessage').style.display = 'block';
             document.getElementById('registrationForm').style.display = 'none';
 
-            // Optionally, you can store the registration data locally or prepare it for later submission
-            // For now, we'll store it in localStorage (note: this is temporary and not secure)
-            const registrationData = {
-                schoolName: schoolName,
-                uniqueId: uniqueId,
-                timestamp: new Date().toISOString()
-            };
-            localStorage.setItem('registration_' + uniqueId, JSON.stringify(registrationData));
-
-            // You can log it to the console for debugging
-            console.log("Registration Data:", registrationData);
+            // Optionally, log to console for debugging
+            console.log("Registration Data:", userData);
         });
 
         // Function to proceed to tests
         function proceedToTests() {
-            // Redirect to the games list page
-            window.location.href = "games.html"; // Ensure 'games.html' exists in the root directory
+            // Retrieve the unique ID from the confirmation message
+            const uniqueId = document.getElementById('uniqueId').textContent;
+
+            if (uniqueId) {
+                // Redirect to the first game
+                window.location.href = "attention/divine-runner.html?uid=" + uniqueId;
+            } else {
+                alert("Unique ID not found. Please register again.");
+                window.location.href = "index.html";
+            }
         }
     </script>
 </body>
