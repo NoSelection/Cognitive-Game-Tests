@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Divine Runner - Attention Test</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .background-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: #ffffff;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 3s infinite alternate;
+            z-index: 1;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.2; }
+        }
+
+        .moon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+            z-index: 1;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            opacity: 0.8;
+            animation: floatCloud linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes floatCloud {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+
+        #gameArea {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            height: 400px;
+            background: linear-gradient(180deg, #0a1f3d, #1a365f);
+            overflow: hidden;
+            border: 3px solid #2c3e50;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        #player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            bottom: 60px;
+            left: 100px;
+            background: linear-gradient(45deg, #ff6f61, #ffcc00);
+            border: 2px solid #ff6f61;
+            border-radius: 50%;
+            animation: float 1.5s infinite alternate ease-in-out;
+            box-shadow: 0 0 20px rgba(255, 111, 97, 0.8);
+            z-index: 2;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+
+        .obstacle {
+            position: absolute;
+            width: 30px;
+            background: linear-gradient(45deg, #94a3b8, #64748b);
+            border: 2px solid #475569;
+            border-radius: 10px;
+            bottom: 60px;
+            animation: glow 2s infinite alternate ease-in-out;
+            box-shadow: 0 0 20px rgba(148, 163, 184, 0.8);
+            z-index: 2;
+        }
+
+        @keyframes glow {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+
+        #ground {
+            position: absolute;
+            width: 100%;
+            height: 60px;
+            bottom: 0;
+            background: linear-gradient(90deg, #30475e, #222831);
+            border-top: 2px solid #445566;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        #score, #instructions {
+            position: absolute;
+            color: #ffffff;
+            font-size: 18px;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #2c3e50;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            z-index: 3;
+        }
+
+        #score {
+            top: 20px;
+            right: 20px;
+            font-weight: 600;
+        }
+
+        #instructions {
+            top: 20px;
+            left: 20px;
+            font-size: 16px;
+        }
+
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            z-index: 5;
+        }
+
+        #startScreen h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 111, 97, 0.8);
+        }
+
+        #startScreen p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        #startScreen button {
+            background: linear-gradient(45deg, #ff6f61, #ffcc00);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 111, 97, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        #startScreen button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 111, 97, 0.7);
+        }
+
+        #startScreen button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(255, 111, 97, 0.5);
+        }
+
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px 40px;
+            border: 2px solid #ff6f61;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 0 40px rgba(255, 111, 97, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 4;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -40%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        #gameOver h1 {
+            color: #ff6f61;
+            font-size: 32px;
+            margin: 0 0 10px;
+            text-shadow: 0 0 10px rgba(255, 111, 97, 0.8);
+        }
+
+        #finalScore {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 10px 0;
+            display: block;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6f61, #ffcc00);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            font-family: inherit;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(255, 111, 97, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 111, 97, 0.7);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(255, 111, 97, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-layer">
+        <div class="moon"></div>
+        <div class="cloud" style="top: 10%; animation-duration: 20s;"></div>
+        <div class="cloud" style="top: 30%; animation-duration: 25s;"></div>
+        <div class="cloud" style="top: 50%; animation-duration: 30s;"></div>
+        <!-- Stars -->
+        <div class="star" style="top: 5%; left: 10%; animation-delay: 0s;"></div>
+        <div class="star" style="top: 15%; left: 30%; animation-delay: 1s;"></div>
+        <div class="star" style="top: 25%; left: 50%; animation-delay: 2s;"></div>
+        <div class="star" style="top: 35%; left: 70%; animation-delay: 3s;"></div>
+        <div class="star" style="top: 45%; left: 90%; animation-delay: 4s;"></div>
+    </div>
+    <div id="startScreen">
+        <h1>Divine Runner</h1>
+        <p>Press Space or Click to Start</p>
+        <button onclick="startGame()" tabindex="0">Start Game</button>
+    </div>
+    <div id="gameArea">
+        <div id="player"></div>
+        <div id="ground"></div>
+        <div id="score">Score: 0</div>
+        <div id="instructions">Press SPACE or Click to Jump!</div>
+        <div id="gameOver">
+            <h1>Game Over!</h1>
+            <span id="finalScore"></span>
+            <button onclick="resetGame()">Try Again!</button>
+        </div>
+    </div>
+
+    <audio id="jumpSound" src="jump.wav"></audio>
+    <audio id="gameOverSound" src="gameover.wav"></audio>
+
+    <script>
+        // Game elements
+        const player = document.getElementById('player');
+        const gameArea = document.getElementById('gameArea');
+        const scoreElement = document.getElementById('score');
+        const gameOverElement = document.getElementById('gameOver');
+        const finalScoreElement = document.getElementById('finalScore');
+        const jumpSound = document.getElementById('jumpSound');
+        const gameOverSound = document.getElementById('gameOverSound');
+
+        // Game state
+        let isJumping = false;
+        let score = 0;
+        let gameActive = false; // Game starts inactive
+        let playerY = 60;
+        let velocityY = 0;
+        let gravity = 0.8;
+        let jumpForce = 18;
+        let obstacles = [];
+        let animationFrameId = null;
+        let obstacleTimeoutId = null;
+        let baseObstacleSpeed = 6;
+        let obstacleInterval = 1500;
+
+        function updatePlayerPosition() {
+            if (!gameActive) return;
+
+            if (isJumping || playerY > 60) {
+                velocityY -= gravity;
+                playerY += velocityY;
+
+                if (playerY <= 60) {
+                    playerY = 60;
+                    isJumping = false;
+                    velocityY = 0;
+                }
+
+                player.style.bottom = playerY + 'px';
+            }
+
+            obstacles.forEach((obstacle, index) => {
+                const currentLeft = parseFloat(obstacle.style.left);
+                const newLeft = currentLeft - baseObstacleSpeed;
+                obstacle.style.left = `${newLeft}px`;
+
+                if (checkCollision(obstacle)) {
+                    gameOver();
+                    return;
+                }
+
+                if (newLeft < -50) {
+                    obstacle.remove();
+                    obstacles.splice(index, 1);
+                    score += 10;
+                    scoreElement.textContent = `Score: ${score}`;
+                    baseObstacleSpeed = 6 + (score / 100);
+                }
+            });
+
+            animationFrameId = requestAnimationFrame(updatePlayerPosition);
+        }
+
+        function jump() {
+            if (gameActive && !isJumping && playerY <= 60) {
+                isJumping = true;
+                velocityY = jumpForce;
+                jumpSound.play(); // Play jump sound
+            }
+        }
+
+        function createObstacle() {
+            if (!gameActive) return;
+
+            const obstacle = document.createElement('div');
+            obstacle.className = 'obstacle';
+            const height = Math.random() * 70 + 50;
+            obstacle.style.height = `${height}px`;
+            obstacle.style.left = `${gameArea.offsetWidth}px`;
+            
+            gameArea.appendChild(obstacle);
+            obstacles.push(obstacle);
+
+            obstacleTimeoutId = setTimeout(createObstacle, obstacleInterval);
+        }
+
+        function checkCollision(obstacle) {
+            const playerRect = player.getBoundingClientRect();
+            const obstacleRect = obstacle.getBoundingClientRect();
+
+            return (
+                playerRect.right > obstacleRect.left + 5 &&
+                playerRect.left < obstacleRect.right - 5 &&
+                playerRect.bottom > obstacleRect.top + 5
+            );
+        }
+
+        function gameOver() {
+            gameActive = false;
+            gameOverElement.style.display = 'block';
+            finalScoreElement.textContent = `Score: ${score}`;
+            gameOverSound.play(); // Play game over sound
+            
+            cancelAnimationFrame(animationFrameId);
+            clearTimeout(obstacleTimeoutId);
+        }
+
+        function resetGame() {
+            gameActive = true;
+            score = 0;
+            baseObstacleSpeed = 6;
+            playerY = 60;
+            velocityY = 0;
+            isJumping = false;
+            
+            scoreElement.textContent = 'Score: 0';
+            gameOverElement.style.display = 'none';
+            player.style.bottom = '60px';
+            
+            obstacles.forEach(obstacle => obstacle.remove());
+            obstacles = [];
+            
+            createObstacle();
+            updatePlayerPosition();
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            resetGame();
+        }
+
+        // Event Listeners
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                if (!gameActive) {
+                    startGame();
+                } else {
+                    jump();
+                }
+            }
+        });
+
+        gameArea.addEventListener('click', (event) => {
+            if (!gameActive) {
+                startGame();
+            } else {
+                jump();
+            }
+        });
+    </script>
+</body>
+</html>

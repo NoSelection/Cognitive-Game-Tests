@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Pattern Game</title>
+    <style>
+        body {
+            background-color: #0A0A0A;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Roboto Mono', monospace;
+            overflow: hidden;
+            color: #B3FFB3; /* Default color */
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+          .matrix-background {
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              z-index: 1;
+              overflow: hidden;
+          }
+
+          .game-container {
+              background-color: rgba(15, 15, 15, 0.7);
+              padding: 25px;
+              border-radius: 15px;
+              border: 1px solid rgba(179, 255, 179, 0.1);
+              position: relative;
+              z-index: 2;
+              width: 500px;
+              max-width: 90%;
+              box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+             transition: background-color 0.5s ease, border 0.5s ease;
+          }
+
+          .game-container.game-over {
+              display: none;
+          }
+          
+           .game-container.start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+          
+           .game-container.started .start-screen {
+            display: none;
+          }
+
+
+          .status-bar {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 15px;
+              font-size: 18px;
+              color: rgba(179, 255, 179, 0.8);
+              padding: 0 5px;
+              display: none;
+                 transition: color 0.5s ease;
+          }
+        
+           .game-container.started .status-bar {
+            display: flex;
+          }
+
+          .level {
+              text-align: center;
+              margin: 15px 0;
+              font-size: 18px;
+               color: rgba(179, 255, 179, 0.8);
+                display: none;
+                   transition: color 0.5s ease;
+          }
+          
+           .game-container.started .level{
+            display: block;
+          }
+          
+          .grid {
+              display: grid;
+              grid-template-columns: repeat(6, 1fr);
+              gap: 4px;
+              background-color: rgba(30, 30, 30, 0.3);
+              padding: 4px;
+              border-radius: 10px;
+              margin: 15px 0;
+              display: none;
+               transition: background-color 0.5s ease;
+          }
+          
+          .game-container.started .grid{
+            display: grid;
+          }
+
+          .cell {
+              aspect-ratio: 1;
+              background-color: rgba(30, 30, 30, 0.6);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              color: rgba(179, 255, 179, 0.7);
+              font-size: 28px; /* Increased font size */
+              transition: all 0.2s ease, background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+              border: 1px solid rgba(179, 255, 179, 0.1);
+              border-radius: 6px;
+               text-shadow: 0 0 4px rgba(255, 255, 255, 0.2); /* Added text-shadow for better visibility */
+              
+          }
+
+          .cell:hover {
+              background-color: rgba(45, 45, 45, 0.8);
+               color: rgba(179, 255, 179, 0.9);
+             border-color: rgba(179, 255, 179, 0.3);
+              transform: scale(1.05);
+          }
+
+          .timer-bar {
+              width: 100%;
+              height: 4px;
+              background-color: rgba(35, 35, 35, 0.3);
+              margin: 15px 0;
+              border-radius: 2px;
+               overflow: hidden;
+               display: none;
+               transition: background-color 0.5s ease;
+          }
+        
+          .game-container.started .timer-bar {
+            display: block;
+          }
+
+          .timer-progress {
+              height: 100%;
+              width: 100%;
+               background-color: rgba(179, 255, 179, 0.5);
+              transition: width linear, background-color 0.5s ease;
+          }
+           
+          button {
+              background-color: rgba(40, 40, 40, 0.6);
+              color: rgba(179, 255, 179, 0.8);
+              border: 1px solid rgba(179, 255, 179, 0.2);
+              padding: 10px 20px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-size: 16px;
+              transition: all 0.3s ease, background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+              display: block;
+              margin: 15px auto;
+              font-family: 'Roboto Mono', monospace;
+              letter-spacing: 1px;
+          }
+
+          button:hover {
+              background-color: rgba(55, 55, 55, 0.7);
+                border-color: rgba(179, 255, 179, 0.4);
+              transform: translateY(-2px);
+          }
+
+
+        .matrix-character {
+             position: absolute;
+            font-family: 'Roboto Mono', monospace;
+            color: rgba(179, 255, 179, 0.6);
+            font-size: 16px;
+            line-height: 1;
+            white-space: nowrap;
+            opacity: 0;
+            text-shadow: 0 0 8px rgba(179, 255, 179, 0.4);
+            animation: fall linear infinite;
+            transition: color 0.5s ease;
+        }
+
+
+          @keyframes fall {
+              0% {
+                  transform: translateY(-100%);
+                  opacity: 1;
+              }
+              100% {
+                  transform: translateY(100vh);
+                  opacity: 0;
+              }
+          }
+
+
+          /* Game over screen styles */
+          .game-over-screen {
+              display: none;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background-color: rgba(15, 15, 15, 0.9);
+              padding: 40px;
+              border-radius: 15px;
+              border: 1px solid rgba(179, 255, 179, 0.3);
+              text-align: center;
+              z-index: 3;
+             transition: background-color 0.5s ease, border 0.5s ease;
+          }
+
+           .game-over-screen h2{
+             font-size: 28px;
+             margin-bottom: 20px;
+               color: rgba(179, 255, 179, 0.8);
+                transition: color 0.5s ease;
+           }
+
+          .game-over-screen p{
+             font-size: 20px;
+             margin-bottom: 20px;
+              color: rgba(179, 255, 179, 0.7);
+              transition: color 0.5s ease;
+          }
+
+          .game-over-screen.active{
+            display: block;
+          }
+        
+        .start-screen h2 {
+            font-size: 32px;
+             margin-bottom: 15px;
+            color: rgba(179, 255, 179, 0.9);
+            transition: color 0.5s ease;
+          }
+        
+           .start-screen p {
+            font-size: 18px;
+            margin-bottom: 20px;
+             color: rgba(179, 255, 179, 0.7);
+            transition: color 0.5s ease;
+          }
+          
+         /* Blue Theme Styles */
+          .blue-theme body {
+              background-color: #001F3F;
+              color: #ADD8E6;
+          }
+
+          .blue-theme .game-container {
+              background-color: rgba(0, 31, 63, 0.7);
+              border-color: rgba(173, 216, 230, 0.1);
+          }
+
+          .blue-theme .status-bar,
+          .blue-theme .level,
+           .blue-theme .start-screen h2,
+          .blue-theme .start-screen p{
+              color: rgba(173, 216, 230, 0.8);
+          }
+
+          .blue-theme .grid {
+              background-color: rgba(0, 40, 80, 0.3);
+          }
+
+          .blue-theme .cell {
+              background-color: rgba(0, 40, 80, 0.6);
+              color: rgba(173, 216, 230, 0.7);
+              border-color: rgba(173, 216, 230, 0.1);
+          }
+          
+           .blue-theme .cell:hover {
+               background-color: rgba(0, 55, 95, 0.8);
+               color: rgba(173, 216, 230, 0.9);
+                 border-color: rgba(173, 216, 230, 0.3);
+           }
+
+          .blue-theme .timer-bar {
+            background-color: rgba(0, 40, 80, 0.3);
+          }
+           
+          .blue-theme .timer-progress {
+              background-color: rgba(173, 216, 230, 0.5);
+          }
+            
+           .blue-theme button {
+                background-color: rgba(0, 40, 80, 0.6);
+               color: rgba(173, 216, 230, 0.8);
+                border-color: rgba(173, 216, 230, 0.2);
+           }
+            
+            .blue-theme button:hover{
+                background-color: rgba(0, 55, 95, 0.7);
+                 border-color: rgba(173, 216, 230, 0.4);
+            }
+          
+         .blue-theme .matrix-character {
+                color: rgba(173, 216, 230, 0.6);
+                text-shadow: 0 0 8px rgba(173, 216, 230, 0.4);
+           }
+        
+          .blue-theme .game-over-screen {
+             background-color: rgba(0, 31, 63, 0.9);
+               border-color: rgba(173, 216, 230, 0.3);
+          }
+        
+           .blue-theme .game-over-screen h2,
+            .blue-theme .game-over-screen p{
+              color:  rgba(173, 216, 230, 0.8);
+          }
+          
+           /* Red Theme Styles */
+          .red-theme body {
+                background-color: #3E0000; /* Dark red background */
+                color: #FFC0CB;
+            }
+
+            .red-theme .game-container {
+                background-color: rgba(62, 0, 0, 0.7);
+               border-color: rgba(255, 192, 203, 0.1);
+            }
+
+            .red-theme .status-bar,
+            .red-theme .level,
+             .red-theme .start-screen h2,
+          .red-theme .start-screen p {
+                color: rgba(255, 192, 203, 0.8);
+            }
+           
+           .red-theme .grid {
+                background-color: rgba(80, 0, 0, 0.3);
+            }
+
+            .red-theme .cell {
+                background-color: rgba(80, 0, 0, 0.6);
+                color: rgba(255, 192, 203, 0.7);
+                border-color: rgba(255, 192, 203, 0.1);
+            }
+             .red-theme .cell:hover {
+                background-color: rgba(100, 0, 0, 0.8);
+                color: rgba(255, 192, 203, 0.9);
+                border-color: rgba(255, 192, 203, 0.3);
+            }
+
+            .red-theme .timer-bar {
+                background-color: rgba(80, 0, 0, 0.3);
+            }
+
+            .red-theme .timer-progress {
+                background-color: rgba(255, 192, 203, 0.5);
+            }
+            
+             .red-theme button {
+                background-color: rgba(80, 0, 0, 0.6);
+                 color: rgba(255, 192, 203, 0.8);
+                border-color: rgba(255, 192, 203, 0.2);
+            }
+            
+             .red-theme button:hover {
+               background-color: rgba(100, 0, 0, 0.7);
+                border-color: rgba(255, 192, 203, 0.4);
+            }
+        
+           .red-theme .matrix-character {
+                color: rgba(255, 192, 203, 0.6);
+                text-shadow: 0 0 8px rgba(255, 192, 203, 0.4);
+           }
+         
+        .red-theme .game-over-screen {
+             background-color: rgba(62, 0, 0, 0.9);
+               border-color: rgba(255, 192, 203, 0.3);
+          }
+           .red-theme .game-over-screen h2,
+           .red-theme .game-over-screen p{
+                 color:  rgba(255, 192, 203, 0.8);
+          }
+           /* Heavenly Theme Styles */
+        .heavenly-theme body {
+            background: linear-gradient(45deg, #a8edea, #fed6e3, #ffffff);
+             color: #333;
+              animation: gradientAnimation 20s ease infinite;
+
+        }
+
+         @keyframes gradientAnimation {
+            0% {
+                 background-position: 0% 50%;
+            }
+            50% {
+                 background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+         }
+
+        .heavenly-theme .game-container {
+             background-color: rgba(255, 255, 255, 0.8); /* White with more transparency */
+              border: 1px solid rgba(158, 158, 158, 0.5);
+             box-shadow: 0 0 30px rgba(255,255,255, 0.8);
+
+        }
+
+        .heavenly-theme .status-bar,
+        .heavenly-theme .level,
+        .heavenly-theme .start-screen h2,
+        .heavenly-theme .start-screen p {
+            color: rgba(51, 51, 51, 1);
+            text-shadow: 0 0 2px rgba(255,255,255,0.3);/* Dark text for contrast */
+
+
+        }
+
+        .heavenly-theme .grid {
+             background-color: rgba(245, 245, 245, 0.5); /* Lighter background */
+        }
+
+        .heavenly-theme .cell {
+            background-color: rgba(230, 230, 230, 0.9); /* Lighter cells */
+             color: rgba(51, 51, 51, 0.9);
+              border: 1px solid rgba(158, 158, 158, 0.3);
+              text-shadow: 0 0 5px rgba(51,51,51,0.1); /*Dark text for contrast*/
+        }
+
+        .heavenly-theme .cell:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: rgba(51, 51, 51, 1);
+            border: 1px solid rgba(158, 158, 158, 0.3);
+            box-shadow: 0 0 15px rgba(255,255,255, 0.5);
+        }
+
+        .heavenly-theme .timer-bar {
+            background-color: rgba(240, 240, 240, 0.6);
+             box-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+
+        .heavenly-theme .timer-progress {
+            background-color: rgba(0, 153, 255, 0.7);/* Bright blue for visibility */
+         }
+        
+          .heavenly-theme button {
+             background-color: rgba(200, 200, 200, 0.7);
+                color: rgba(51, 51, 51, 1);
+                  border: 1px solid rgba(158, 158, 158, 0.4);
+                  box-shadow: 0 0 10px rgba(255,255,255, 0.5);
+        }
+        
+           .heavenly-theme button:hover{
+                background-color: rgba(220, 220, 220, 0.9);
+                border: 1px solid rgba(158, 158, 158, 0.5);
+            }
+
+        .heavenly-theme .matrix-character {
+           color: rgba(120, 120, 120, 0.8); /* Darker text for contrast */
+            text-shadow: 0 0 8px rgba(255,255,255, 0.2);
+        }
+         .heavenly-theme .game-over-screen {
+               background-color: rgba(255, 255, 255, 0.9); /* White with some transparency */
+              border: 1px solid rgba(158, 158, 158, 0.5);
+          }
+            .heavenly-theme .game-over-screen h2,
+            .heavenly-theme .game-over-screen p{
+               color:  rgba(51, 51, 51, 1);
+                  text-shadow: 0 0 2px rgba(255,255,255,0.5);
+          }
+    </style>
+</head>
+<body>
+    <div class="matrix-background" id="matrixBg"></div>
+      <div class="game-over-screen" id="gameOverScreen">
+        <h2>OYUN BİTTİ</h2>
+        <p>Son Skor: <span id="finalScore">0</span></p>
+        <button onclick="restartGame()">Tekrar Oyna</button>
+      </div>
+     <div class="game-container start-screen" id="gameContainer">
+        <div class="start-screen" id="startScreen">
+            <h2>Matrix Pattern Oyunu</h2>
+            <p>Oyun, ekrandaki semboller arasında farklı olanı bulmaya dayanır.</p>
+            <p>Doğru sembole tıkladığınızda puan kazanırsınız ve seviye atlarsınız.</p>
+            <p>Yanlış sembole tıkladığınızda veya süre bittiğinde bir can kaybedersiniz.</p>
+           <p>3 canınız bittiğinde oyun sona erer. </p>
+            <button onclick="startGame()">Oyunu Başlat</button>
+        </div>
+        <div class="status-bar">
+            <div>SKOR: <span id="score">0</span></div>
+            <div>❤️ <span id="lives">3</span></div>
+        </div>
+        <div class="level">SEVİYE: <span id="level">1</span></div>
+        <div class="timer-bar">
+            <div class="timer-progress" id="timer"></div>
+        </div>
+        <div class="grid" id="grid"></div>
+        <button onclick="restartGame()">Yeni Oyun</button>
+    </div>
+
+    <script>
+        const matrixBg = document.getElementById('matrixBg');
+        const gameContainer = document.getElementById('gameContainer');
+         const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ・．。・゛゜´｀¨ヽヾゝゞ〃仝々〆〇ー―‐／＼~!@#$%^&*()_+=-`';
+        const symbols = [
+            '♅', '⚚', '☍', '☤', '☥', '⚳', '⚴', '⚵', '⚶', '⚷', '⚸', '♆', '☯', '☰', '☱', '☲', '☷', '⛯','⛞','⛛','⛝','⛕','⚿','⨷', '⩜', '⧻', '⦽','⧯','⧖','⎗', '⎈',
+           '⛕', '⊛', '⦾', '⧼', '⧽', '⧾', '⧿', '⨀', '⨁', '⨂', '⨃', '⨄', '⨅', '⨆', '⨇', '⨈', '⨉', '⨊', '⨋', '⨌', '⨍'
+            , '⚬', '⛝', '⟐', '⊞', '⊹', '⟡','⦶', '⧖', '⧰', '⎔','⚹'
+        ];
+        let timerTimeout;
+        let gameState = {
+            score: 0,
+            level: 1,
+            lives: 3,
+            isActive: false
+        };
+        
+        function startGame() {
+            gameState.isActive = true;
+            gameContainer.classList.remove('start-screen');
+            gameContainer.classList.add('started');
+            createGrid();
+        }
+
+        function createMatrixRain() {
+            const columns = Math.floor(window.innerWidth / 20);
+
+            function createDrop() {
+                if (document.hidden) return;
+                
+                const character = document.createElement('div');
+                character.className = 'matrix-character';
+                character.style.left = `${Math.random() * 100}vw`;
+                character.style.top = `-10px`
+                character.style.animationDuration = `${Math.random() * 3 + 4}s`;
+                character.style.fontSize = `${Math.random() * 10 + 14}px`;
+                character.textContent = characters[Math.floor(Math.random() * characters.length)];
+                matrixBg.appendChild(character);
+
+                character.addEventListener('animationend', () => {
+                    character.remove();
+                });
+            }
+
+            // Create initial drops
+            for (let i = 0; i < columns; i++) {
+                setTimeout(createDrop, Math.random() * 2000);
+            }
+
+            // Continuously create new drops
+            setInterval(createDrop, 150);
+        }
+
+        function createGrid() {
+             if (!gameState.isActive) return;
+            
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+           
+             const mainSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+            let differentSymbol;
+            do {
+                differentSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+            } while (differentSymbol === mainSymbol);
+
+           const differentPosition = Math.floor(Math.random() * 36);
+
+            for (let i = 0; i < 36; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.textContent = i === differentPosition ? differentSymbol : mainSymbol;
+                cell.dataset.position = i;
+                cell.addEventListener('click', () => handleClick(i === differentPosition));
+                grid.appendChild(cell);
+            }
+
+            startTimer();
+             updateTheme();
+        }
+
+        function startTimer() {
+             if (!gameState.isActive) return;
+
+            const timer = document.getElementById('timer');
+            const duration = Math.max(2500, 5000 - (gameState.level * 200));
+            
+            clearTimeout(timerTimeout);
+            
+            timer.style.transition = 'none';
+            timer.style.width = '100%';
+            timer.offsetHeight;
+            timer.style.transition = `width ${duration}ms linear`;
+            timer.style.width = '0%';
+
+            timerTimeout = setTimeout(() => {
+                if (gameState.isActive) {
+                    loseLife();
+                }
+            }, duration);
+        }
+
+        function handleClick(correct) {
+            if (!gameState.isActive) return;
+             
+            if (correct) {
+                gameState.score++;
+                document.getElementById('score').textContent = gameState.score;
+                 gameState.level = Math.floor(gameState.score / 4) + 1;
+                document.getElementById('level').textContent = gameState.level;
+                createGrid();
+            } else {
+                loseLife();
+            }
+        }
+
+        function loseLife() {
+             if (!gameState.isActive) return;
+
+            gameState.lives--;
+            document.getElementById('lives').textContent = gameState.lives;
+
+            if (gameState.lives <= 0) {
+                gameOver();
+            } else {
+                createGrid();
+            }
+        }
+
+        function gameOver() {
+            gameState.isActive = false;
+            clearTimeout(timerTimeout);
+            
+             // Show the game over screen
+            gameContainer.classList.add('game-over');
+            finalScoreDisplay.textContent = gameState.score;
+            gameOverScreen.classList.add('active');
+        }
+
+        function restartGame() {
+             clearTimeout(timerTimeout);
+            
+            // Reset game state
+             gameState = {
+                score: 0,
+                level: 1,
+                lives: 3,
+                isActive: false
+            };
+            
+             // Update UI to reflect reset
+            document.getElementById('score').textContent = '0';
+            document.getElementById('level').textContent = '1';
+            document.getElementById('lives').textContent = '3';
+           
+             // Hide the game over screen and display game screen
+           gameContainer.classList.remove('game-over');
+           gameOverScreen.classList.remove('active');
+           
+           gameContainer.classList.remove('started');
+            gameContainer.classList.add('start-screen');
+            
+             updateTheme(); // Reset theme to default
+           
+        }
+
+         function updateTheme() {
+            const body = document.body;
+
+            if (gameState.level >= 20) {
+                body.classList.remove('blue-theme');
+                body.classList.remove('red-theme');
+                 body.classList.add('heavenly-theme');
+            }
+            else if (gameState.level >= 10) {
+                 body.classList.remove('heavenly-theme');
+                body.classList.remove('blue-theme');
+                body.classList.add('red-theme');
+            } else if (gameState.level >= 5) {
+                body.classList.remove('heavenly-theme');
+                body.classList.remove('red-theme');
+                body.classList.add('blue-theme');
+            }
+             else{
+                 body.classList.remove('heavenly-theme');
+                body.classList.remove('blue-theme');
+                body.classList.remove('red-theme');
+            }
+        }
+
+        // Initialize matrix rain immediately
+        createMatrixRain();
+        
+          // Handle visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && gameState.isActive) {
+                startTimer();
+            }
+        });
+    </script>
+</body>
+</html>
