@@ -6,11 +6,11 @@
     <title>Cognitive Testing Platform</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRCj3cIhH+JqiwunfOGqlxX1A/LC4CsrMdHlKmCf3J8/YGoTeqm4YKdhNUn/+3Ygzx6tv4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <!-- Font Awesome for Icons (Integrity and Crossorigin Removed) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Firebase SDK (Firebase 8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
         /* Reset CSS */
         * {
@@ -159,7 +159,7 @@
         };
 
         // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         // Function to generate a unique ID (UUIDv4)
