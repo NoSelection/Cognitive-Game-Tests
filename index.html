@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRCj3cIhH+JqiwunfOGqlxX1A/LC4CsrMdHlKmCf3J8/YGoTeqm4YKdhNUn/+3Ygzx6tv4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <style>
         /* Reset CSS */
         * {
@@ -145,9 +148,22 @@
     </div>
 
     <script>
-        // Function to generate a unique ID
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDd5X8692Kpy8KUTyGfFQlzDmbdPW0yS1g",
+            authDomain: "cognitive-games-in-famagusta.firebaseapp.com",
+            projectId: "cognitive-games-in-famagusta",
+            storageBucket: "cognitive-games-in-famagusta.firebasestorage.app",
+            messagingSenderId: "393830716501",
+            appId: "1:393830716501:web:fb74a24ba43fc1d97a30dc"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Function to generate a unique ID (UUIDv4)
         function generateUniqueId() {
-            // Generate a UUIDv4 compliant ID
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                 const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
@@ -155,7 +171,7 @@
         }
 
         // Handle form submission
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault(); // Prevent form from submitting normally
 
             // Get the school name
@@ -178,16 +194,21 @@
                 surveyCompleted: false // Flag to track survey completion
             };
 
-            // Store user data in LocalStorage
-            localStorage.setItem('registration_' + uniqueId, JSON.stringify(userData));
+            try {
+                // Add user data to Firestore
+                await db.collection("registrations").doc(uniqueId).set(userData);
 
-            // Display confirmation message
-            document.getElementById('uniqueId').textContent = uniqueId;
-            document.getElementById('confirmationMessage').style.display = 'block';
-            document.getElementById('registrationForm').style.display = 'none';
+                // Display confirmation message
+                document.getElementById('uniqueId').textContent = uniqueId;
+                document.getElementById('confirmationMessage').style.display = 'block';
+                document.getElementById('registrationForm').style.display = 'none';
 
-            // Optionally, log to console for debugging
-            console.log("Registration Data:", userData);
+                // Log to console for debugging
+                console.log("Registration Data:", userData);
+            } catch (error) {
+                console.error("Error writing document: ", error);
+                alert("There was an error processing your registration. Please try again.");
+            }
         });
 
         // Function to proceed to tests
