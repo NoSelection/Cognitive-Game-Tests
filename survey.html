@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey - Cognitive Testing Platform</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRCj3cIhH+JqiwunfOGqlxX1A/LC4CsrMdHlKmCf3J8/YGoTeqm4YKdhNUn/+3Ygzx6tv4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #ffffff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Container */
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        /* Heading */
+        .container h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #333333;
+        }
+
+        /* Subheading */
+        .container p {
+            font-size: 1em;
+            margin-bottom: 30px;
+            color: #666666;
+        }
+
+        /* Survey Form Styling */
+        .survey-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .survey-form label {
+            font-size: 1em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            text-align: left;
+            width: 100%;
+        }
+
+        .survey-form select {
+            width: 100%;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .survey-form select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .survey-form button {
+            background-color: #2ecc71;
+            color: #ffffff;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .survey-form button:hover {
+            background-color: #27ae60;
+        }
+
+        .survey-form button i {
+            margin-right: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .container h1 {
+                font-size: 1.5em;
+            }
+
+            .survey-form button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Survey</h1>
+        <p>Please take a moment to provide your feedback.</p>
+        <form class="survey-form" id="surveyForm">
+            <!-- Language Selection (Optional) -->
+            <label for="language">Choose Language / Dil Seçiniz:</label>
+            <select id="language" name="language" required>
+                <option value="" disabled selected>Select Language / Dil Seçiniz</option>
+                <option value="en">English</option>
+                <option value="tr">Türkçe</option>
+            </select>
+
+            <!-- Survey Question -->
+            <div id="surveyQuestion">
+                <!-- Content will be injected based on language selection -->
+            </div>
+
+            <button type="submit"><i class="fas fa-paper-plane"></i> Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to parse query parameters
+        function getQueryParams() {
+            const params = {};
+            window.location.search.substring(1).split("&").forEach(function(part) {
+                const [key, value] = part.split("=");
+                if (key && value) {
+                    params[key] = decodeURIComponent(value);
+                }
+            });
+            return params;
+        }
+
+        // Function to retrieve user data from LocalStorage
+        function getUserData(uniqueId) {
+            return JSON.parse(localStorage.getItem('registration_' + uniqueId));
+        }
+
+        // Function to handle language selection and display survey question
+        function handleLanguageSelection() {
+            const languageSelect = document.getElementById('language');
+            const surveyQuestionDiv = document.getElementById('surveyQuestion');
+
+            languageSelect.addEventListener('change', function() {
+                const selectedLanguage = languageSelect.value;
+
+                if (selectedLanguage === 'en') {
+                    surveyQuestionDiv.innerHTML = `
+                        <label for="favoriteGame">Which game did you like the most?</label>
+                        <select id="favoriteGame" name="favoriteGame" required>
+                            <option value="" disabled selected>Select a game</option>
+                            <option value="Divine Runner">Divine Runner</option>
+                            <option value="Matrix Pattern Breaker">Matrix Pattern Breaker</option>
+                            <option value="Memory Sequential">Memory Sequential</option>
+                            <option value="Memory Matching">Memory Matching</option>
+                            <option value="Press Reaction">Press Reaction</option>
+                            <option value="Red Circle Reaction">Red Circle Reaction</option>
+                            <option value="Problem Solving: Middle School">Problem Solving: Middle School</option>
+                            <option value="Problem Solving: Lise Universite">Problem Solving: Lise Universite</option>
+                            <option value="Problem Solving Test">Problem Solving Test</option>
+                        </select>
+                    `;
+                } else if (selectedLanguage === 'tr') {
+                    surveyQuestionDiv.innerHTML = `
+                        <label for="favoriteGame">En çok hangi oyunu beğendiniz?</label>
+                        <select id="favoriteGame" name="favoriteGame" required>
+                            <option value="" disabled selected>Bir oyun seçiniz</option>
+                            <option value="Divine Runner">Divine Runner</option>
+                            <option value="Matrix Pattern Breaker">Matrix Pattern Breaker</option>
+                            <option value="Memory Sequential">Memory Sequential</option>
+                            <option value="Memory Matching">Memory Matching</option>
+                            <option value="Press Reaction">Press Reaction</option>
+                            <option value="Red Circle Reaction">Red Circle Reaction</option>
+                            <option value="Problem Solving: Middle School">Problem Solving: Ortaokul</option>
+                            <option value="Problem Solving: Lise Universite">Problem Solving: Lise Üniversite</option>
+                            <option value="Problem Solving Test">Problem Solving Test</option>
+                        </select>
+                    `;
+                } else {
+                    surveyQuestionDiv.innerHTML = '';
+                }
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('surveyForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            const params = getQueryParams();
+            const uniqueId = params.uid;
+
+            if (!uniqueId) {
+                alert("User not identified. Please complete the games first.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const userData = getUserData(uniqueId);
+
+            if (!userData) {
+                alert("User data not found. Please register again.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            // Check if survey is already completed
+            if (userData.surveyCompleted) {
+                alert("You have already completed the survey. Thank you!");
+                window.location.href = "index.html";
+                return;
+            }
+
+            // Retrieve selected language
+            const selectedLanguage = document.getElementById('language').value;
+
+            // Retrieve favorite game
+            const favoriteGameSelect = document.getElementById('favoriteGame');
+            const favoriteGame = favoriteGameSelect ? favoriteGameSelect.value : null;
+
+            if (!favoriteGame) {
+                alert("Please select your favorite game.");
+                return;
+            }
+
+            // Update user data with survey response
+            userData.favoriteGame = favoriteGame;
+            userData.surveyCompleted = true;
+            localStorage.setItem('registration_' + uniqueId, JSON.stringify(userData));
+
+            // Optionally, send data to a server or Firebase here
+
+            // Display thank you message
+            if (selectedLanguage === 'en') {
+                alert("Thank you for completing the survey!");
+            } else if (selectedLanguage === 'tr') {
+                alert("Anketi tamamladığınız için teşekkür ederiz!");
+            }
+
+            // Redirect to completion or home page
+            window.location.href = "index.html";
+        });
+
+        // Initialize survey page
+        window.addEventListener('DOMContentLoaded', () => {
+            handleLanguageSelection();
+        });
+    </script>
+</body>
+</html>
